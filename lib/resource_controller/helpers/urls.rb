@@ -45,54 +45,59 @@ module ResourceController
           symbol = type.blank? ? nil : type.gsub(/_/, '').to_sym
       
           define_method("#{type}object_url") do |*alternate_object|
-            smart_url *object_url_options(symbol, alternate_object.first)
+            smart_url *object_url_options(symbol, alternate_object.first).push(extract_params(*alternate_object))
           end
       
           define_method("#{type}object_path") do |*alternate_object|
-            smart_path *object_url_options(symbol, alternate_object.first)
+            smart_path *object_url_options(symbol, alternate_object.first).push(extract_params(*alternate_object))
           end
       
           define_method("hash_for_#{type}object_url") do |*alternate_object|
-            hash_for_smart_url *object_url_options(symbol, alternate_object.first)
+            hash_for_smart_url *object_url_options(symbol, alternate_object.first).push(extract_params(*alternate_object))
           end
       
           define_method("hash_for_#{type}object_path") do |*alternate_object|
-            hash_for_smart_path *object_url_options(symbol, alternate_object.first)
+            hash_for_smart_path *object_url_options(symbol, alternate_object.first).push(extract_params(*alternate_object))
           end
         end
     
-        def new_object_url
-          smart_url *new_object_url_options
+        def new_object_url(*args)
+          smart_url *new_object_url_options.push(extract_params(*args))
         end
     
-        def new_object_path
-          smart_path *new_object_url_options
+        def new_object_path(*args)
+          smart_path *new_object_url_options.push(extract_params(*args))
         end
     
-        def hash_for_new_object_url
-          hash_for_smart_url *new_object_url_options
+        def hash_for_new_object_url(*args)
+          hash_for_smart_url *new_object_url_options.push(extract_params(*args))
         end
     
-        def hash_for_new_object_path
-          hash_for_smart_path *new_object_url_options
+        def hash_for_new_object_path(*args)
+          hash_for_smart_path *new_object_url_options.push(extract_params(*args))
         end
     
-        def collection_url
-          smart_url *collection_url_options
+        def collection_url(*args)
+          smart_url *collection_url_options.push(extract_params(*args))
         end
     
-        def collection_path
-          smart_path *collection_url_options
+        def collection_path(*args)
+          smart_path *collection_url_options.push(extract_params(*args))
         end
     
-        def hash_for_collection_url
-          hash_for_smart_url *collection_url_options
+        def hash_for_collection_url(*args)
+          hash_for_smart_url *collection_url_options.push(extract_params(*args))
         end
     
-        def hash_for_collection_path
-          hash_for_smart_path *collection_url_options
+        def hash_for_collection_path(*args)
+          hash_for_smart_path *collection_url_options.push(extract_params(*args))
         end
     
+        def extract_params(*args)
+          params = {}
+          params.merge!(args.last) if args.last.is_a?(Hash)
+        end
+        
         # Used internally to provide the options to smart_url from Urligence.
         #
         def collection_url_options

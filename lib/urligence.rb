@@ -1,23 +1,30 @@
 module Urligence
   def smart_url(*objects)
-    urligence(*objects.push(:url))
+    urligence *attach_params(:nil, :url, *objects)
   end
   
   def smart_path(*objects)
-    urligence(*objects.push(:path))
+    urligence *attach_params(nil, :path, *objects)
   end
   
   def hash_for_smart_url(*objects)
-    urligence(*objects.unshift(:hash_for).push(:url).push({:type => :hash}))
+    urligence *attach_params(:hash_for, :url, *objects)
   end
   
   def hash_for_smart_path(*objects)
-    urligence(*objects.unshift(:hash_for).push(:path).push({:type => :hash}))
+    urligence *attach_params(:hash_for, :path, *objects)
+  end
+  
+  # Attaches prefix and suffix and appends params 
+  def attach_params(prefix, suffix, *objects)
+    params = objects.pop if objects.last.is_a?(Hash)
+    objects.unshift(prefix).push(suffix).push(params)
   end
   
   def urligence(*objects)
-    config = {}
-    config.merge!(objects.pop) if objects.last.is_a?(Hash)
+    only_hash = objects.first == :hash_for
+    params = {}
+    params.merge!(objects.pop) if objects.last.is_a?(Hash)
     
     objects.reject! { |object| object.nil? }
     
@@ -31,10 +38,9 @@ module Urligence
       end
     end
     
-    unless config[:type] == :hash
-      send url_fragments.join("_"), *objects.flatten.select { |obj| !obj.is_a? Symbol }
+    unless only_hash
+      send url_fragments.join("_"), *objects.flatten.select { |obj| !obj.is_a? Symbol }.push(params)
     else
-      params = {}
       unparsed_params = objects.select { |obj| !obj.is_a? Symbol }
       unparsed_params.each_with_index do |obj, i|
         unless i == (unparsed_params.length-1)
