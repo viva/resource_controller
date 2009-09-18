@@ -26,9 +26,7 @@ module Urligence
     params = {}
     params.merge!(objects.pop) if objects.last.is_a?(Hash)
     
-    logger.debug("##### BEFORE:#{objects.inspect}")
     objects.reject! { |object| object.nil? }
-    logger.debug("##### AFTER:#{objects.inspect}")
     
     url_fragments = objects.collect do |obj|
       if obj.is_a? Symbol
